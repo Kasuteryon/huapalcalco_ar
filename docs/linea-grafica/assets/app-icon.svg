@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- Huapalcalco AR · icono del app. Pirámide de tres cuerpos en talud con escalinata central. Retícula de 1024. -->
+  <rect width="1024" height="1024" fill="#9BE36D"/>
+  <g fill="#0B1210">
+    <polygon points="136,808 888,808 820,640 204,640"/>
+    <polygon points="256,604 768,604 708,456 316,456"/>
+    <polygon points="368,420 656,420 606,296 418,296"/>
+    <rect x="436" y="224" width="152" height="72"/>
+  </g>
+  <polygon points="480,296 544,296 576,808 448,808" fill="#9BE36D"/>
+</svg>

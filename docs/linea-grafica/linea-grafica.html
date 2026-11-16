@@ -1,0 +1,806 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Huapalcalco AR · Línea gráfica</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+@page{size:297mm 210mm;margin:0}
+:root{
+  --canvas:#EEF2F0; --white:#FFFFFF; --line:#DCE3DF; --fill:#E6ECE9;
+  --ink:#0B1210; --ink2:#5E6A65; --brote:#9BE36D; --monte:#134E32; --almagre:#C2492F;
+  --sf:"SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+  --jk:"Plus Jakarta Sans",sans-serif;
+  --mono:"SF Mono",ui-monospace,Menlo,monospace;
+  --shadow:0 1px 2px rgba(11,18,16,.05),0 10px 26px rgba(11,18,16,.07);
+}
+*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+html,body{margin:0;background:#9aa49f}
+body{font:400 11pt/1.5 var(--sf);color:var(--ink);-webkit-font-smoothing:antialiased}
+.page{width:297mm;height:210mm;background:var(--canvas);position:relative;overflow:hidden;page-break-after:always;break-after:page;padding:16mm 18mm 20mm;display:flex;flex-direction:column;gap:7mm;margin:0 auto}
+.page.white{background:var(--white)}
+@media screen{.page{margin:10mm auto;box-shadow:0 4px 30px rgba(0,0,0,.2)}}
+.foot{position:absolute;left:18mm;right:18mm;bottom:8mm;display:flex;justify-content:space-between;font:500 8pt var(--sf);color:var(--ink2)}
+.foot b{font-weight:600;color:var(--ink)}
+.head{display:flex;flex-direction:column;gap:2mm}
+.eyebrow{font:600 8.5pt/1 var(--sf);letter-spacing:.09em;text-transform:uppercase;color:var(--monte)}
+h1{margin:0;font:800 64pt/.92 var(--sf);letter-spacing:-.035em}
+h1 span{display:block;font-weight:400;letter-spacing:-.03em}
+h2{margin:0;font:800 30pt/1 var(--sf);letter-spacing:-.03em}
+h2 span{font-weight:400}
+h3{margin:0;font:700 13pt/1.2 var(--sf);letter-spacing:-.01em}
+p{margin:0}
+.muted{color:var(--ink2)}
+.lede{font-size:12.5pt;color:var(--ink2);max-width:150mm}
+.card{background:var(--white);border-radius:7mm;padding:6mm;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:2.5mm;min-width:0}
+.card p{font-size:9.5pt;color:var(--ink2);line-height:1.5}
+.row{display:flex;gap:6mm;min-height:0}
+.grow{flex:1;min-width:0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:5mm}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:5mm}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:5mm}
+.num{font:700 9pt var(--sf);width:7mm;height:7mm;border-radius:50%;background:var(--brote);display:grid;place-items:center}
+svg.ico{display:block}
+.pyr{--pyr:#0B1210;--bgc:#9BE36D}
+.pyr.b{--pyr:#134E32;--bgc:#FFFFFF}
+.pyr.m{--pyr:#0B1210;--bgc:#FFFFFF}
+.pyr.n{--pyr:#FFFFFF;--bgc:#0B1210}
+.icon{border-radius:22.5%;overflow:hidden;box-shadow:0 6px 16px rgba(11,18,16,.14);flex:none}
+code,.code{font-family:var(--mono)}
+
+/* portada */
+.cover{padding:0;display:grid;grid-template-columns:1fr 1fr;gap:0;background:var(--white)}
+.cover .l{padding:18mm 0 18mm 18mm;display:flex;flex-direction:column;gap:6mm}
+.cover .r{background:var(--canvas);position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10mm;padding:14mm}
+.cover .r img.model{width:118%;margin-right:-30mm}
+.logos{display:flex;align-items:center;gap:7mm}
+.logos img{display:block}
+.logos i{width:1px;height:16mm;background:var(--line)}
+.meta{display:grid;grid-template-columns:auto 1fr;gap:1.5mm 6mm;font-size:9.5pt}
+.meta span{color:var(--ink2)}
+
+/* indice */
+.toc{display:grid;grid-template-columns:1fr 1fr;gap:0 14mm}
+.toc div{display:flex;align-items:baseline;gap:4mm;padding:3.4mm 0;border-bottom:1px solid var(--line);font-size:12pt}
+.toc div b{font:700 9pt var(--sf);color:var(--monte);width:8mm}
+.toc div span{margin-left:auto;font:500 10pt var(--sf);color:var(--ink2);font-variant-numeric:tabular-nums}
+
+/* icono */
+.gridicon{position:relative}
+.gridicon svg.guides{position:absolute;inset:0}
+.sizes{display:flex;align-items:flex-end;gap:7mm}
+.sizes div{display:flex;flex-direction:column;align-items:center;gap:2mm;font:500 8pt var(--sf);color:var(--ink2)}
+.bad{position:relative}
+.bad::after{content:"";position:absolute;right:-2mm;top:-2mm;width:6mm;height:6mm;border-radius:50%;background:var(--almagre) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M7 7l10 10M17 7 7 17' stroke='white' stroke-width='3' stroke-linecap='round'/></svg>") center/60% no-repeat}
+
+/* color */
+.sw{display:grid;grid-template-columns:repeat(7,1fr);gap:4mm}
+.sw .c{background:var(--white);border-radius:6mm;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.sw .c i{display:block;height:30mm}
+.sw .c div{padding:3.5mm;display:flex;flex-direction:column;gap:.6mm;font-size:8pt;color:var(--ink2)}
+.sw .c b{font-size:10.5pt;color:var(--ink)}
+.sw .c code{font-size:7.6pt}
+.ratio{display:flex;height:7mm;border-radius:99px;overflow:hidden;box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:9pt}
+th{font:600 7.5pt var(--sf);letter-spacing:.07em;text-transform:uppercase;color:var(--ink2);text-align:left;padding:2mm 3mm 2mm 0;border-bottom:1px solid var(--line)}
+td{padding:2.2mm 3mm 2.2mm 0;border-bottom:1px solid var(--line);vertical-align:middle}
+td .dot{display:inline-block;width:3.2mm;height:3.2mm;border-radius:50%;vertical-align:-.5mm;margin-right:1.5mm;border:1px solid var(--line)}
+.pass{font:600 7.5pt var(--sf);padding:1mm 2.4mm;border-radius:99px;background:var(--brote)}
+.fail{font:600 7.5pt var(--sf);padding:1mm 2.4mm;border-radius:99px;background:var(--fill);color:var(--almagre)}
+
+/* tipo */
+.aa{font-size:92pt;line-height:.9;font-weight:800;letter-spacing:-.04em}
+.chars{font-size:13pt;line-height:1.5;color:var(--ink2);word-break:break-all}
+.scale div{display:grid;grid-template-columns:32mm 1fr 26mm;gap:4mm;align-items:baseline;border-bottom:1px solid var(--line);padding:2.4mm 0}
+.scale code{font-size:7.5pt;color:var(--ink2)}
+
+/* iconos */
+.icons{display:grid;grid-template-columns:repeat(6,1fr);gap:4mm}
+.ic{background:var(--white);border-radius:6mm;padding:5mm 4mm;display:flex;flex-direction:column;gap:2.5mm;align-items:flex-start;box-shadow:var(--shadow)}
+.ic .w{width:14mm;height:14mm;border-radius:50%;background:var(--canvas);display:grid;place-items:center}
+.ic svg{width:7mm;height:7mm}
+.ic b{font-size:10.5pt}
+.ic span{font-size:8.5pt;color:var(--ink2);line-height:1.4}
+.icbig{background:var(--white);border-radius:7mm;box-shadow:var(--shadow);padding:6mm;display:flex;gap:8mm;align-items:center}
+
+/* superficies */
+.glass{background:rgba(255,255,255,.62);-webkit-backdrop-filter:blur(16px) saturate(1.6);backdrop-filter:blur(16px) saturate(1.6);border:1px solid rgba(255,255,255,.9);box-shadow:0 8px 24px rgba(11,18,16,.14),inset 0 1px 0 rgba(255,255,255,.95)}
+.demo{position:relative;border-radius:7mm;overflow:hidden;background:radial-gradient(120% 90% at 50% 20%,#FFFFFF,#E3EAE6);height:100%}
+.demo img{position:absolute;width:112%;left:-6%;top:26mm}
+.radii{display:flex;gap:4mm;align-items:flex-end}
+.radii div{display:flex;flex-direction:column;align-items:center;gap:2mm;font:500 7.5pt var(--sf);color:var(--ink2);text-align:center}
+.radii i{display:block;background:var(--white);box-shadow:var(--shadow);border:1px solid var(--line)}
+.space{display:flex;gap:3mm;align-items:flex-end}
+.space div{display:flex;flex-direction:column;align-items:center;gap:1.5mm;font:500 7.5pt var(--sf);color:var(--ink2)}
+.space i{display:block;background:var(--brote);border-radius:1px}
+
+/* componentes */
+.rb{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;flex:none}
+.rb svg{width:18px;height:18px}
+.solidbtn{background:var(--white);box-shadow:var(--shadow)}
+.go{width:44px;height:44px;border-radius:50%;background:var(--brote);display:grid;place-items:center;flex:none}
+.go svg{width:16px;height:16px}
+.compbox{background:var(--white);border-radius:7mm;box-shadow:var(--shadow);padding:5mm;display:flex;flex-direction:column;gap:3mm}
+.compbox .lbl{font:600 7.5pt var(--sf);letter-spacing:.07em;text-transform:uppercase;color:var(--ink2)}
+.compbox .stage{background:var(--canvas);border-radius:5mm;padding:5mm;display:flex;gap:3mm;align-items:center;justify-content:center;flex-wrap:wrap;min-height:24mm;flex:1}
+.pill{height:42px;border-radius:99px;display:inline-flex;align-items:center;gap:8px;padding:0 18px;font:600 13px var(--sf)}
+.search{display:flex;align-items:center;gap:8px;height:42px;border-radius:99px;border:1px solid var(--line);padding:0 6px 0 14px;font-size:13px;color:var(--ink2);background:var(--white);flex:1}
+.search svg{width:16px;height:16px}
+.search .f{margin-left:auto;width:32px;height:32px;border-radius:50%;background:var(--canvas);display:grid;place-items:center}
+.filters{display:flex;gap:8px}
+.filters .on{display:flex;align-items:center;gap:8px;background:var(--brote);border-radius:99px;padding:4px 14px 4px 4px;font:600 13px var(--sf)}
+.filters .on i,.filters .off{width:36px;height:36px;border-radius:50%;background:var(--white);display:grid;place-items:center;flex:none}
+.filters svg{width:18px;height:18px;color:var(--monte)}
+.tile{display:flex;align-items:center;gap:8px;background:var(--white);border-radius:99px;padding:5px 14px 5px 5px}
+.tile i{width:38px;height:38px;border-radius:50%;background:var(--canvas);display:grid;place-items:center;flex:none}
+.tile svg{width:17px;height:17px;color:var(--monte)}
+.tile span{font-size:11px;color:var(--ink2);line-height:1.2}
+.tile b{display:block;font-size:13px;color:var(--ink)}
+.audio{display:flex;align-items:center;gap:10px;background:var(--white);border-radius:99px;padding:5px 14px 5px 5px;flex:1}
+.audio .go{width:38px;height:38px}
+.audio .bar{flex:1;height:4px;border-radius:9px;background:var(--line);position:relative}
+.audio .bar i{position:absolute;left:0;top:0;bottom:0;width:38%;border-radius:9px;background:var(--monte)}
+.audio span{font:500 12px var(--sf);color:var(--ink2);font-variant-numeric:tabular-nums}
+.tabbar{height:62px;border-radius:99px;display:flex;align-items:center;gap:4px;padding:6px;width:290px}
+.tabbar .t{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;flex:none}
+.tabbar .t svg{width:20px;height:20px}
+.tabbar .t.act{background:var(--ink);color:var(--white)}
+.tabbar .ar{flex:1;height:48px;border-radius:99px;background:var(--white);display:grid;place-items:center;box-shadow:0 2px 8px rgba(11,18,16,.08)}
+.tabbar .ar svg{width:22px;height:22px}
+.minicard{background:var(--white);border-radius:28px;padding:16px;width:230px;height:132px;position:relative;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.minicard h4{margin:0;font:800 22px/1 var(--sf);letter-spacing:-.03em}
+.minicard h4 span{display:block;font-weight:400;font-size:17px;margin-top:3px}
+.minicard .go{position:absolute;top:12px;right:12px}
+.mini{display:flex;gap:12px;margin-top:auto}
+.mini div{display:flex;flex-direction:column}
+.mini b{font:700 18px/1 var(--sf)}
+.mini span{font-size:11px;color:var(--ink2);margin-top:3px}
+.mini hr{border:0;border-left:1px solid var(--line);margin:0}
+
+/* dispositivos */
+.devices{display:flex;gap:10mm;justify-content:center;zoom:.82}
+.phone{width:300px;aspect-ratio:9/19.5;border-radius:46px;background:var(--canvas);border:8px solid var(--white);box-shadow:0 2px 4px rgba(11,18,16,.05),0 24px 50px rgba(11,18,16,.14);position:relative;overflow:hidden;flex:none}
+.phone .status{position:absolute;top:12px;left:26px;right:22px;display:flex;justify-content:space-between;font:600 13px var(--sf);z-index:5}
+.phone .status i{display:flex;gap:4px;align-items:center}
+.phone .status i b{display:block;background:var(--ink);border-radius:2px}
+.scr{position:absolute;inset:0;padding:48px 16px 16px;display:flex;flex-direction:column;gap:12px}
+.topbar{display:flex;justify-content:space-between;align-items:center}
+.bigcard{background:var(--white);border-radius:28px;padding:16px;position:relative;overflow:hidden;min-height:200px;display:flex;flex-direction:column}
+.bigcard h4{margin:0;font:800 26px/1 var(--sf);letter-spacing:-.03em}
+.bigcard h4 span{display:block;font-weight:400;font-size:20px;letter-spacing:-.02em;margin-top:4px}
+.bigcard .go{position:absolute;top:14px;right:14px}
+.bigcard img{position:absolute;right:-34px;bottom:34px;width:200px}
+.bigcard .mini{position:relative}
+.limecard{background:var(--brote);border-radius:28px;padding:16px;height:120px;position:relative}
+.limecard h4{margin:0;font:800 24px/1 var(--sf);letter-spacing:-.03em}
+.limecard h4 span{display:block;font-weight:400;font-size:17px;margin-top:4px}
+.limecard .go{position:absolute;top:12px;right:12px;background:var(--white)}
+.phone .tabbar{position:absolute;left:12px;right:12px;bottom:14px;width:auto}
+.photo{position:absolute;inset:0;background:radial-gradient(120% 70% at 50% 25%,#FFFFFF 0%,#E9EFEC 70%)}
+.photo img{position:absolute;width:190%;left:-48%;top:70px}
+.vbar{position:absolute;right:20px;top:120px;width:8px;height:250px;border-radius:99px;background:rgba(11,18,16,.08)}
+.vbar i{position:absolute;left:0;right:0;top:0;height:33%;border-radius:99px;background:var(--monte)}
+.vbar b{position:absolute;right:-18px;top:calc(33% - 22px);width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font:700 13px var(--sf)}
+.sheet{position:absolute;left:10px;right:10px;bottom:10px;border-radius:34px;padding:22px 16px 16px;display:flex;flex-direction:column;gap:14px}
+.sheet::before{content:"";position:absolute;top:8px;left:50%;width:44px;height:4px;border-radius:9px;background:rgba(11,18,16,.25);transform:translateX(-50%)}
+.sheet h4{margin:0;font:800 28px/1 var(--sf);letter-spacing:-.03em}
+.sheet h4 span{display:block;font-weight:400;font-size:21px;margin-top:4px}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tiles .tile{background:rgba(255,255,255,.75);padding:5px}
+.cam{position:absolute;inset:0;background:linear-gradient(180deg,#C9D9E3 0%,#DCE6E2 38%,#8E9B7E 38.2%,#A7B092 100%)}
+.cam::after{content:"";position:absolute;left:-10%;right:-10%;top:52%;height:30%;background:#B9A78B;transform:perspective(300px) rotateX(55deg);border-radius:6px;opacity:.9}
+.cam img{position:absolute;left:8%;width:84%;top:47%;z-index:2;filter:drop-shadow(0 18px 14px rgba(0,0,0,.25))}
+.brk{position:absolute;left:30px;right:30px;top:150px;height:260px;z-index:3}
+.brk i{position:absolute;width:44px;height:44px;border:3px solid var(--white)}
+.brk i:nth-child(1){left:0;top:0;border-right:0;border-bottom:0;border-radius:18px 0 0 0}
+.brk i:nth-child(2){right:0;top:0;border-left:0;border-bottom:0;border-radius:0 18px 0 0}
+.brk i:nth-child(3){left:0;bottom:0;border-right:0;border-top:0;border-radius:0 0 0 18px}
+.brk i:nth-child(4){right:0;bottom:0;border-left:0;border-top:0;border-radius:0 0 18px 0}
+.scalepill{position:absolute;top:104px;left:50%;transform:translateX(-50%);z-index:4;border-radius:99px;padding:8px 14px;font:600 12.5px var(--sf);display:flex;gap:10px}
+.scalepill b{font-weight:600;color:var(--ink2)}
+.arcard{position:absolute;left:12px;right:12px;bottom:12px;background:var(--white);border-radius:30px;padding:18px;z-index:4;display:flex;align-items:center;gap:12px}
+.arcard h4{margin:0;font:800 22px/1.05 var(--sf);letter-spacing:-.03em}
+.arcard h4 span{display:block;font-weight:400;font-size:17px;margin-top:3px}
+.arcard .go{width:56px;height:56px;margin-left:auto}
+.devnote{font-size:8.5pt;color:var(--ink2);text-align:center}
+
+.tablet{width:960px;aspect-ratio:1180/820;border-radius:38px;border:10px solid var(--white);background:var(--canvas);position:relative;overflow:hidden;box-shadow:0 2px 4px rgba(11,18,16,.05),0 24px 50px rgba(11,18,16,.14);zoom:.74;flex:none}
+.tgrid{position:absolute;inset:0;display:grid;grid-template-columns:200px 1fr 300px}
+.rail{padding:24px 12px;display:flex;flex-direction:column;gap:4px}
+.brand{display:flex;align-items:center;gap:10px;padding:0 8px 18px}
+.brand b{font:800 15px/1.1 var(--sf);letter-spacing:-.02em}
+.brand span{display:block;font:400 11.5px var(--sf);color:var(--ink2)}
+.ri{display:flex;align-items:center;gap:10px;height:44px;border-radius:99px;padding:0 14px;font:500 14px var(--sf);color:var(--ink2)}
+.ri svg{width:19px;height:19px}
+.ri.act{background:var(--ink);color:var(--white);font-weight:600}
+.rail .arbig{margin-top:auto;background:var(--brote);color:var(--ink);font-weight:600;justify-content:center}
+.tstage{position:relative;padding:20px 8px}
+.stagehead{display:flex;justify-content:space-between;align-items:flex-start}
+.stagehead h4{margin:0;font:800 34px/1 var(--sf);letter-spacing:-.035em}
+.stagehead h4 span{font-weight:400;display:block;font-size:24px;margin-top:4px}
+.stagehead .acts{display:flex;gap:8px}
+.stageimg{position:absolute;left:-10px;right:-20px;top:140px}
+.stageimg img{width:100%}
+.pin{position:absolute;transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center;gap:2px;z-index:3}
+.pin b{font:600 11.5px var(--sf);padding:5px 10px;border-radius:99px;white-space:nowrap}
+.pin i{width:12px;height:12px;border-radius:50%;background:var(--white);border:3px solid var(--ink)}
+.pin.act b{background:var(--ink);color:var(--white)}
+.pin.act i{background:var(--brote)}
+.toolbar{position:absolute;left:50%;transform:translateX(-50%);bottom:22px;border-radius:99px;display:flex;gap:4px;padding:6px;z-index:4}
+.toolbar span{height:40px;border-radius:99px;padding:0 14px;display:flex;align-items:center;gap:6px;font:500 13px var(--sf)}
+.toolbar span svg{width:17px;height:17px}
+.toolbar .on{background:var(--white);box-shadow:0 2px 8px rgba(11,18,16,.08);font-weight:600}
+.panel{margin:14px 14px 14px 0;background:var(--white);border-radius:30px;padding:20px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.panel .eyebrow{font-size:11px}
+.panel h4{margin:0;font:800 26px/1 var(--sf);letter-spacing:-.03em}
+.panel h4 span{display:block;font-weight:400;font-size:19px;margin-top:4px}
+.panel p{font-size:13.5px;color:var(--ink2);line-height:1.5}
+.panel .audio{background:var(--canvas);flex:none}
+.stops{display:flex;flex-direction:column;gap:2px}
+.stop{display:flex;align-items:center;gap:10px;padding:8px 6px;border-radius:16px;font-size:13.5px}
+.stop i{width:26px;height:26px;border-radius:50%;background:var(--canvas);display:grid;place-items:center;font:600 11.5px var(--sf);font-style:normal;flex:none}
+.stop.done i{background:var(--monte);color:var(--white)}
+.stop.now{background:var(--canvas);font-weight:600}
+.stop.now i{background:var(--brote)}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:4mm}
+.stat{background:var(--white);border-radius:5mm;padding:4mm 5mm;box-shadow:var(--shadow)}
+.stat b{display:block;font:700 17pt/1.1 var(--sf);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat span{font-size:8.5pt;color:var(--ink2)}
+.render{background:var(--white);border-radius:7mm;box-shadow:var(--shadow);padding:5mm;display:flex;align-items:center;justify-content:center}
+.render img{max-width:100%;max-height:100%;display:block}
+pre{margin:0;background:var(--ink);color:#E9F1EC;border-radius:6mm;padding:6mm;font:400 8.2pt/1.55 var(--mono);white-space:pre;overflow:hidden}
+pre .k{color:var(--brote)} pre .c{color:#8A9690} pre .s{color:#F0B4A6}
+ul{margin:0;padding-left:5mm;display:flex;flex-direction:column;gap:1.5mm;font-size:9.5pt}
+ul li{color:var(--ink2)}
+ul li b{color:var(--ink)}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="pyr" viewBox="0 0 1024 1024">
+    <rect width="1024" height="1024" style="fill:var(--bgc)"/>
+    <g style="fill:var(--pyr)"><polygon points="136,808 888,808 820,640 204,640"/><polygon points="256,604 768,604 708,456 316,456"/><polygon points="368,420 656,420 606,296 418,296"/><rect x="436" y="224" width="152" height="72"/></g>
+    <polygon points="480,296 544,296 576,808 448,808" style="fill:var(--bgc)"/>
+  </symbol>
+  <symbol id="i-sitio" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M3 20h18M5 20V11h14v9M9 20v-5M12 20v-5M15 20v-5M5 11V7h2v4M11 11V7h2v4M17 11V7h2v4"/></symbol>
+  <symbol id="i-rec" viewBox="0 0 24 24"><g fill="currentColor"><ellipse cx="8" cy="16.5" rx="2.3" ry="3.6"/><circle cx="6.2" cy="11" r="1"/><circle cx="8" cy="10.3" r="1"/><circle cx="9.8" cy="11" r="1"/><ellipse cx="16" cy="10.5" rx="2.3" ry="3.6"/><circle cx="14.2" cy="5" r="1"/><circle cx="16" cy="4.3" r="1"/><circle cx="17.8" cy="5" r="1"/></g></symbol>
+  <symbol id="i-ar" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4M7 16.5h10M8.5 16.5V14h7v2.5M10.5 14v-2.5h3V14"/></symbol>
+  <symbol id="i-est" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M4 6h16M4 11h9M16 11h4M4 16h5M12 16h8M4 21h16"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M9 7v7M9 14l-3 6M9 14l3 6M9 9.5l-4 2M9 9.5l5-2M12.5 2.5l7 10"/><circle cx="9" cy="5" r="2" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+  <symbol id="i-acv" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M3 20h18M5 20c0-9 2.5-15 7-15s7 6 7 15M10 20v-3a2 2 0 0 1 4 0v3"/></symbol>
+  <symbol id="i-go" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M7 17 17 7M9 7h8v8"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17.2v.3"/></g></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+  <symbol id="i-aud" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M11 5 6 9H3v6h3l5 4zM15.5 9a4 4 0 0 1 0 6"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3.5"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/></g></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></g></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></g></symbol>
+  <symbol id="i-comp" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></g></symbol>
+  <symbol id="i-stone" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M4 20h16M6 20v-4h12v4M8 16v-4h8v4M10 12V8h4v4"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M5 12.5 10 17l9-10"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5v14l11-7z"/></symbol>
+  <symbol id="i-orbit" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M12 4a8 8 0 1 0 8 8M20 4v5h-5"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M12 3 3 8l9 5 9-5zM3 13l9 5 9-5"/></symbol>
+</svg>
+
+<!-- 1 PORTADA -->
+<div class="page cover">
+  <div class="l">
+    <span class="eyebrow">Manual de línea gráfica · versión 1.0</span>
+    <div style="margin-top:8mm"><h1>Huapalcalco<span>en realidad aumentada</span></h1></div>
+    <p class="lede" style="max-width:110mm">Identidad visual, sistema de interfaz y criterios de diseño de la aplicación de la Zona de Monumentos Arqueológicos de Huapalcalco, Tulancingo, Hidalgo.</p>
+    <div class="meta" style="margin-top:auto">
+      <span>Elaborado por</span><b>Eduardo Ignacio Castellón Castillo</b>
+      <span>Fecha</span><b>Noviembre de 2026</b>
+      <span>Plataformas</span><b>iOS, iPadOS y Android</b>
+    </div>
+    <div class="logos" style="margin-top:4mm">
+      <img src="assets/logo-inah.png" alt="INAH" style="height:22mm">
+      <i></i>
+      <img src="assets/logo-upiih.png" alt="UPIIH" style="height:22mm">
+    </div>
+  </div>
+  <div class="r">
+    <svg class="icon pyr" width="150" height="150" viewBox="0 0 1024 1024" style="width:42mm;height:42mm"><use href="#pyr"/></svg>
+    <img class="model" src="assets/hero.png" alt="Modelo fotogramétrico de la pirámide de Huapalcalco">
+  </div>
+</div>
+
+<!-- 2 CONTENIDO -->
+<div class="page white">
+  <div class="head"><span class="eyebrow">Contenido</span><h2>Índice</h2></div>
+  <div class="toc" style="margin-top:4mm">
+    <div><b>01</b>Concepto<span>3</span></div>
+    <div><b>08</b>Superficies y forma<span>10</span></div>
+    <div><b>02</b>Icono del app<span>4</span></div>
+    <div><b>09</b>Componentes<span>11</span></div>
+    <div><b>03</b>Variantes y usos del icono<span>5</span></div>
+    <div><b>10</b>Pantallas de teléfono<span>12</span></div>
+    <div><b>04</b>Firma y coedición<span>6</span></div>
+    <div><b>11</b>Pantallas de tablet<span>13</span></div>
+    <div><b>05</b>Color<span>7</span></div>
+    <div><b>12</b>El modelo 3D<span>14</span></div>
+    <div><b>06</b>Tipografía<span>8</span></div>
+    <div><b>13</b>Tokens para Flutter<span>15</span></div>
+    <div><b>07</b>Iconografía<span>9</span></div>
+    <div><b>14</b>Créditos<span>16</span></div>
+  </div>
+  <p class="muted" style="font-size:9pt;margin-top:auto">Documento de trabajo. Las fechas y datos históricos se validarán con el Instituto Nacional de Antropología e Historia antes de su publicación en la aplicación.</p>
+  <div class="foot"><span><b>Huapalcalco AR</b> · Línea gráfica 1.0</span><span>Eduardo Ignacio Castellón Castillo</span><span>2</span></div>
+</div>
+
+<!-- 3 CONCEPTO -->
+<div class="page">
+  <div class="head"><span class="eyebrow">01 · Concepto</span><h2>Un sitio de tierra <span>en una interfaz de luz</span></h2></div>
+  <div class="row" style="flex:1">
+    <div class="grow" style="display:flex;flex-direction:column;gap:5mm">
+      <p class="lede">Huapalcalco significa lugar de la casa de madera. Es uno de los asentamientos más antiguos del valle de Tulancingo y la tradición lo vincula con Ce Ácatl Topiltzin antes de su llegada a Tula. La aplicación lleva su pirámide de tres cuerpos a la mesa del visitante, en realidad aumentada y en recorrido virtual.</p>
+      <p class="muted" style="font-size:10pt;max-width:150mm">La interfaz es blanca y silenciosa para que el color cálido lo ponga el propio sitio: la tierra, la piedra y los nopales capturados por el dron. El verde brote marca lo que se puede tocar y el negro tinta marca dónde está el usuario.</p>
+      <div class="g2" style="margin-top:auto">
+        <div class="card"><span class="num">1</span><h3>El modelo es el protagonista</h3><p>Ninguna capa tapa la pirámide más de lo necesario. En tablet, el modelo y la información conviven en pantalla.</p></div>
+        <div class="card"><span class="num">2</span><h3>Vidrio solo en lo que flota</h3><p>El liquid glass se reserva para navegación y controles sobre el modelo o la cámara. Lo que se lee va en blanco sólido.</p></div>
+        <div class="card"><span class="num">3</span><h3>Un acento por pantalla</h3><p>Cada pantalla tiene una sola acción principal en verde brote. Si hay dos, una de ellas no es principal.</p></div>
+        <div class="card"><span class="num">4</span><h3>Cada forma viene del sitio</h3><p>El icono, los iconos de menú y los colores secundarios salen de la pirámide, las pinturas rupestres y el paisaje del cerro.</p></div>
+      </div>
+    </div>
+    <div class="render" style="width:92mm;flex:none"><img src="assets/top.png" alt="Vista cenital del modelo"></div>
+  </div>
+  <div class="foot"><span><b>Huapalcalco AR</b> · Línea gráfica 1.0</span><span>Eduardo Ignacio Castellón Castillo</span><span>3</span></div>
+</div>
+
+<!-- 4 ICONO -->
+<div class="page white">
+  <div class="head"><span class="eyebrow">02 · Icono del app</span><h2>La pirámide <span>de tres cuerpos</span></h2></div>
+  <div class="row" style="flex:1;align-items:center">
+    <div class="gridicon" style="width:96mm;height:96mm;flex:none">
+      <svg class="icon pyr" viewBox="0 0 1024 1024" style="width:96mm;height:96mm;box-shadow:none"><use href="#pyr"/></svg>
+      <svg class="guides" viewBox="0 0 1024 1024" style="width:96mm;height:96mm">
+        <g stroke="#134E32" stroke-opacity=".45" stroke-width="3" fill="none" stroke-dasharray="10 8">
+          <line x1="136" y1="0" x2="136" y2="1024"/><line x1="888" y1="0" x2="888" y2="1024"/>
+          <line x1="0" y1="224" x2="1024" y2="224"/><line x1="0" y1="808" x2="1024" y2="808"/>
+          <line x1="512" y1="0" x2="512" y2="1024"/>
+          <line x1="0" y1="640" x2="1024" y2="640"/><line x1="0" y1="456" x2="1024" y2="456"/><line x1="0" y1="296" x2="1024" y2="296"/>
+        </g>
+        <g fill="#134E32" font-family="SF Pro Text, -apple-system, sans-serif" font-size="30" font-weight="600">
+          <text x="900" y="805">808</text><text x="900" y="637">640</text><text x="900" y="453">456</text><text x="900" y="293">296</text><text x="900" y="221">224</text>
+          <text x="140" y="40">136</text><text x="760" y="40">888</text>
+        </g>
+      </svg>
+    </div>
+    <div class="grow" style="display:flex;flex-direction:column;gap:5mm">
+      <p class="lede">Tres cuerpos en talud, un templo en la cima y la escalinata que corta la pirámide de arriba a abajo. Es la silueta que se ve en el modelo del dron, reducida a sus planos esenciales.</p>
+      <ul>
+        <li><b>Retícula de 1024 px.</b> La pirámide ocupa de 136 a 888 en horizontal y de 224 a 808 en vertical, centrada en ambos ejes.</li>
+        <li><b>Talud.</b> Cada cuerpo se inclina 68 px por cada 168 px de altura, el mismo ángulo en los tres.</li>
+        <li><b>Separación entre cuerpos.</b> 36 px. A tamaño pequeño se leen como franjas y no se cierran.</li>
+        <li><b>Escalinata.</b> De 64 px en la cima a 128 px en la base, en el color de fondo.</li>
+        <li><b>Sin degradados, sin sombras ni brillos.</b> iOS 26 y Android aplican su propio tratamiento de vidrio y máscara.</li>
+      </ul>
+      <div class="sizes" style="margin-top:3mm">
+        <div><svg class="icon pyr" viewBox="0 0 1024 1024" style="width:27mm;height:27mm"><use href="#pyr"/></svg>180 pt</div>
+        <div><svg class="icon pyr" viewBox="0 0 1024 1024" style="width:18mm;height:18mm"><use href="#pyr"/></svg>120 pt</div>
+        <div><svg class="icon pyr" viewBox="0 0 1024 1024" style="width:13mm;height:13mm"><use href="#pyr"/></svg>87 pt</div>
+        <div><svg class="icon pyr" viewBox="0 0 1024 1024" style="width:9mm;height:9mm"><use href="#pyr"/></svg>60 pt</div>
+        <div><svg class="icon pyr" viewBox="0 0 1024 1024" style="width:6mm;height:6mm;box-shadow:none"><use href="#pyr"/></svg>40 pt</div>
+        <div><svg class="icon pyr" viewBox="0 0 1024 1024" style="width:4.4mm;height:4.4mm;box-shadow:none"><use href="#pyr"/></svg>29 pt</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span><b>Huapalcalco AR</b> · Línea gráfica 1.0</span><span>Eduardo Ignacio Castellón Castillo</span><span>4</span></div>
+</div>
+
+<!-- 5 VARIANTES -->
+<div class="page">
+  <div class="head"><span class="eyebrow">03 · Variantes y usos del icono</span><h2>Cuatro versiones <span>y lo que no se hace</span></h2></div>
+  <div class="g4">
+    <div class="card" style="align-items:flex-start"><svg class="icon pyr" viewBox="0 0 1024 1024" style="width:30mm;height:30mm"><use href="#pyr"/></svg><h3>Principal</h3><p>Tinta sobre brote. Icono de tienda, pantalla de inicio y splash.</p></div>
+    <div class="card" style="align-items:flex-start"><svg class="icon pyr b" viewBox="0 0 1024 1024" style="width:30mm;height:30mm"><use href="#pyr"/></svg><h3>Clara</h3><p>Monte sobre blanco. Variante clara del icono en iOS 26 y materiales impresos.</p></div>
+    <div class="card" style="align-items:flex-start"><svg class="icon pyr n" viewBox="0 0 1024 1024" style="width:30mm;height:30mm"><use href="#pyr"/></svg><h3>Oscura</h3><p>Blanco sobre tinta. Solo para el modo oscuro del sistema en la pantalla de inicio.</p></div>
+    <div class="card" style="align-items:flex-start"><svg class="icon pyr m" viewBox="0 0 1024 1024" style="width:30mm;height:30mm"><use href="#pyr"/></svg><h3>Monocroma</h3><p>Tinta sobre blanco. Sellos, oficios y documentos en una tinta.</p></div>
+  </div>
+  <div class="row">
+    <div class="card grow">
+      <h3>Área de protección</h3>
+      <div style="display:flex;gap:8mm;align-items:center">
+        <div style="padding:7mm;border:1.5px dashed var(--monte);border-radius:5mm;background:repeating-linear-gradient(45deg,#fff,#fff 6px,#F1F6F3 6px,#F1F6F3 12px)"><svg class="icon pyr" viewBox="0 0 1024 1024" style="width:28mm;height:28mm;box-shadow:none"><use href="#pyr"/></svg></div>
+        <p>Alrededor del icono queda libre un espacio igual a la cuarta parte de su lado. Ningún texto, logo o borde entra en esa zona. El tamaño mínimo en impresión es de 10 mm.</p>
+      </div>
+    </div>
+    <div class="card" style="width:150mm;flex:none">
+      <h3>Usos incorrectos</h3>
+      <div style="display:flex;gap:7mm;align-items:flex-start;margin-top:2mm">
+        <div class="bad" style="text-align:center"><svg class="icon pyr" viewBox="0 0 1024 1024" style="width:20mm;height:20mm;transform:rotate(-12deg)"><use href="#pyr"/></svg><p style="margin-top:2mm">Rotar</p></div>
+        <div class="bad" style="text-align:center"><svg class="icon pyr" viewBox="0 0 1024 1024" style="width:26mm;height:16mm" preserveAspectRatio="none"><use href="#pyr"/></svg><p style="margin-top:2mm">Deformar</p></div>
+        <div class="bad" style="text-align:center"><svg class="icon pyr" viewBox="0 0 1024 1024" style="width:20mm;height:20mm;--bgc:#C2492F"><use href="#pyr"/></svg><p style="margin-top:2mm">Otros colores</p></div>
+        <div class="bad" style="text-align:center"><svg class="icon pyr" viewBox="0 0 1024 1024" style="width:20mm;height:20mm;filter:drop-shadow(3px 5px 3px rgba(0,0,0,.5)) saturate(1.8)"><use href="#pyr"/></svg><p style="margin-top:2mm">Efectos</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span><b>Huapalcalco AR</b> · Línea gráfica 1.0</span><span>Eduardo Ignacio Castellón Castillo</span><span>5</span></div>
+</div>
+
+<!-- 6 FIRMA Y COEDICION -->
+<div class="page white">
+  <div class="head"><span class="eyebrow">04 · Firma y coedición</span><h2>Nombre, icono <span>e instituciones</span></h2></div>
+  <div class="g2">
+    <div class="card" style="background:var(--canvas);box-shadow:none;align-items:center;justify-content:center;padding:10mm">
+      <div style="display:flex;align-items:center;gap:5mm">
+        <svg class="icon pyr" viewBox="0 0 1024 1024" style="width:20mm;height:20mm"><use href="#pyr"/></svg>
+        <div><div style="font:800 30pt/1 var(--sf);letter-spacing:-.035em">Huapalcalco</div><div style="font:400 15pt/1.2 var(--sf);letter-spacing:-.02em;color:var(--ink2)">en realidad aumentada</div></div>
+      </div>
+    </div>
+    <div class="card" style="background:var(--canvas);box-shadow:none;align-items:center;justify-content:center;padding:10mm">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:3mm">
+        <svg class="icon pyr" viewBox="0 0 1024 1024" style="width:20mm;height:20mm"><use href="#pyr"/></svg>
+        <div style="font:800 24pt/1 var(--sf);letter-spacing:-.035em">Huapalcalco</div>
+        <div style="font:400 12pt/1 var(--sf);color:var(--ink2)">en realidad aumentada</div>
+      </div>
+    </div>
+  </div>
+  <p class="muted" style="font-size:9.5pt">El nombre se compone en San Francisco Display en peso 800, con el complemento en peso 400. La altura del icono es igual a la altura total del bloque de texto en la versión horizontal.</p>
+  <div class="card" style="margin-top:auto">
+    <h3>Coedición institucional</h3>
+    <div style="display:flex;align-items:center;gap:9mm;margin:3mm 0">
+      <div style="display:flex;align-items:center;gap:3.5mm"><svg class="icon pyr" viewBox="0 0 1024 1024" style="width:15mm;height:15mm"><use href="#pyr"/></svg><div style="font:800 17pt/1 var(--sf);letter-spacing:-.03em">Huapalcalco</div></div>
+      <i style="width:1px;height:20mm;background:var(--line)"></i>
+      <img src="assets/logo-inah.png" alt="INAH" style="height:22mm">
+      <i style="width:1px;height:20mm;background:var(--line)"></i>
+      <img src="assets/logo-upiih.png" alt="UPIIH" style="height:22mm">
+    </div>
+    <p>Los logos del INAH y de la UPIIH aparecen en la pantalla de bienvenida, en Créditos y en todo material impreso. Van a la misma altura óptica, separados por filetes de 1 px en el color de línea, siempre sobre fondo blanco y sin alterar sus colores ni proporciones. Los logos institucionales nunca se colocan sobre vidrio ni sobre el modelo.</p>
+  </div>
+  <div class="foot"><span><b>Huapalcalco AR</b> · Línea gráfica 1.0</span><span>Eduardo Ignacio Castellón Castillo</span><span>6</span></div>
+</div>
+
+<!-- 7 COLOR -->
+<div class="page">
+  <div class="head"><span class="eyebrow">05 · Color</span><h2>Blanco, brote <span>y tinta</span></h2></div>
+  <div class="sw">
+    <div class="c"><i style="background:#FFFFFF;border-bottom:1px solid #DCE3DF"></i><div><b>Blanco</b><code>#FFFFFF</code><code>255 255 255</code>Tarjetas, hojas y paneles</div></div>
+    <div class="c"><i style="background:#EEF2F0"></i><div><b>Lienzo</b><code>#EEF2F0</code><code>238 242 240</code>Fondo de pantalla</div></div>
+    <div class="c"><i style="background:#9BE36D"></i><div><b>Brote</b><code>#9BE36D</code><code>155 227 109</code>Acción principal</div></div>
+    <div class="c"><i style="background:#0B1210"></i><div><b>Tinta</b><code>#0B1210</code><code>11 18 16</code>Texto y estado activo</div></div>
+    <div class="c"><i style="background:#134E32"></i><div><b>Monte</b><code>#134E32</code><code>19 78 50</code>Iconos, progreso, enlaces</div></div>
+    <div class="c"><i style="background:#5E6A65"></i><div><b>Gris piedra</b><code>#5E6A65</code><code>94 106 101</code>Texto secundario</div></div>
+    <div class="c"><i style="background:#C2492F"></i><div><b>Almagre</b><code>#C2492F</code><code>194 73 47</code>Solo pintura rupestre</div></div>
+  </div>
+  <div class="row" style="flex:1">
+    <div class="card grow">
+      <h3>Proporción por pantalla</h3>
+      <div class="ratio" style="margin:2mm 0"><i style="flex:44;background:#EEF2F0"></i><i style="flex:36;background:#FFFFFF"></i><i style="flex:12;background:#0B1210"></i><i style="flex:6;background:#9BE36D"></i><i style="flex:1.5;background:#134E32"></i><i style="flex:.5;background:#C2492F"></i></div>
+      <p>Lienzo y blanco 80%, tinta 12%, brote 6%, monte y almagre 2%. La aplicación solo tiene tema claro. El calor de la paleta lo aporta la textura del modelo, por eso no se usan tonos crema ni beige en la interfaz.</p>
+      <p>El almagre es el rojo de las pinturas del cerro de La Mesa y El Huiztli. Se reserva para etiquetas y contenido de pintura rupestre y nunca se usa en botones ni alertas.</p>
+    </div>
+    <div class="card" style="width:128mm;flex:none">
+      <h3>Contraste (WCAG 2.2)</h3>
+      <table>
+        <tr><th>Combinación</th><th>Relación</th><th>Uso</th></tr>
+        <tr><td><span class="dot" style="background:#0B1210"></span>Tinta sobre blanco</td><td>18.9 : 1</td><td><span class="pass">Todo texto</span></td></tr>
+        <tr><td><span class="dot" style="background:#0B1210"></span>Tinta sobre brote</td><td>12.3 : 1</td><td><span class="pass">Todo texto</span></td></tr>
+        <tr><td><span class="dot" style="background:#134E32"></span>Monte sobre blanco</td><td>9.7 : 1</td><td><span class="pass">Todo texto</span></td></tr>
+        <tr><td><span class="dot" style="background:#5E6A65"></span>Gris piedra sobre lienzo</td><td>5.0 : 1</td><td><span class="pass">Todo texto</span></td></tr>
+        <tr><td><span class="dot" style="background:#C2492F"></span>Almagre sobre blanco</td><td>4.9 : 1</td><td><span class="pass">Todo texto</span></td></tr>
+        <tr><td><span class="dot" style="background:#9BE36D"></span>Brote sobre blanco</td><td>1.5 : 1</td><td><span class="fail">Nunca texto</span></td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="foot"><span><b>Huapalcalco AR</b> · Línea gráfica 1.0</span><span>Eduardo Ignacio Castellón Castillo</span><span>7</span></div>
+</div>
+
+<!-- 8 TIPOGRAFIA -->
+<div class="page white">
+  <div class="head"><span class="eyebrow">06 · Tipografía</span><h2>San Francisco <span>y Plus Jakarta Sans</span></h2></div>
+  <div class="g2">
+    <div class="card" style="background:var(--canvas);box-shadow:none">
+      <span class="eyebrow">iOS y iPadOS</span>
+      <div style="display:flex;align-items:flex-end;gap:6mm"><div class="aa" style="font-family:var(--sf)">Aa</div><div><h3>SF Pro</h3><p>Fuente del sistema de Apple. Se usa sin incluir archivos en la aplicación.</p></div></div>
+      <div class="chars" style="font-family:var(--sf)">ABCDEFGHIJKLMNÑOPQRSTUVWXYZ abcdefghijklmnñopqrstuvwxyz áéíóú 0123456789</div>
+    </div>
+    <div class="card" style="background:var(--canvas);box-shadow:none">
+      <span class="eyebrow">Android</span>
+      <div style="display:flex;align-items:flex-end;gap:6mm"><div class="aa" style="font-family:var(--jk)">Aa</div><div><h3>Plus Jakarta Sans</h3><p>Licencia SIL Open Font. Se incluye en la aplicación porque la licencia de SF Pro solo permite su uso en plataformas de Apple.</p></div></div>
+      <div class="chars" style="font-family:var(--jk)">ABCDEFGHIJKLMNÑOPQRSTUVWXYZ abcdefghijklmnñopqrstuvwxyz áéíóú 0123456789</div>
+    </div>
+  </div>
+  <div class="scale">
+    <div><code>display · 34 / 800 / −1.2</code><span style="font:800 26pt/1 var(--sf);letter-spacing:-.035em">Pirámide</span><code>Títulos de pantalla</code></div>
+    <div><code>displaySub · 24 / 400</code><span style="font:400 18pt/1 var(--sf);letter-spacing:-.02em">de tres cuerpos</span><code>Complemento</code></div>
+    <div><code>title · 20 / 700</code><span style="font:700 15pt/1.2 var(--sf);letter-spacing:-.02em">Escalinata oriente</span><code>Tarjetas y hojas</code></div>
+    <div><code>body · 16 / 400 / 1.5</code><span style="font:400 12pt/1.5 var(--sf)">La escalinata da a la plaza, donde se reunían quienes asistían a las ceremonias.</span><code>Fichas</code></div>
+    <div><code>data · 20 / 700 tabular</code><span style="font:700 15pt/1 var(--sf);font-variant-numeric:tabular-nums">16.7 × 13.4 m</span><code>Medidas</code></div>
+    <div><code>caption · 12 / 500</code><span style="font:500 9pt/1.3 var(--sf);color:var(--ink2)">Parada 2 de 6 · 1:40 min de audio</span><code>Apoyo</code></div>
+  </div>
+  <p class="muted" style="font-size:9pt">Regla de composición: el título va en peso 800 y su complemento en peso 400 en la línea siguiente, sin cambiar de color. Tamaños en puntos de pantalla. Respetar Dynamic Type en iOS y el escalado de fuente en Android.</p>
+  <div class="foot"><span><b>Huapalcalco AR</b> · Línea gráfica 1.0</span><span>Eduardo Ignacio Castellón Castillo</span><span>8</span></div>
+</div>
+
+<!-- 9 ICONOGRAFIA -->
+<div class="page">
+  <div class="head"><span class="eyebrow">07 · Iconografía</span><h2>Iconos <span>que vienen del sitio</span></h2></div>
+  <div class="icons">
+    <div class="ic"><span class="w"><svg><use href="#i-sitio"/></svg></span><b>Sitio</b><span>La casa de madera del glifo toponímico.</span></div>
+    <div class="ic"><span class="w"><svg><use href="#i-rec"/></svg></span><b>Recorrido</b><span>Huellas, el signo de camino en los códices.</span></div>
+    <div class="ic"><span class="w"><svg><use href="#i-ar"/></svg></span><b>AR</b><span>La pirámide dentro del visor.</span></div>
+    <div class="ic"><span class="w"><svg><use href="#i-est"/></svg></span><b>Estratos</b><span>Capas de excavación para el tiempo.</span></div>
+    <div class="ic"><span class="w"><svg><use href="#i-pin"/></svg></span><b>Pinturas</b><span>El cazador con átlatl de los abrigos rocosos.</span></div>
+    <div class="ic"><span class="w"><svg><use href="#i-acv"/></svg></span><b>Acervo</b><span>El cerro con su cueva, donde se guarda todo.</span></div>
+  </div>
+  <div class="row" style="flex:1">
+    <div class="icbig grow">
+      <svg viewBox="0 0 24 24" style="width:60mm;height:60mm;flex:none;background:repeating-linear-gradient(0deg,transparent 0 calc(60mm/24 - 1px),#E3EAE6 calc(60mm/24 - 1px) calc(60mm/24)),repeating-linear-gradient(90deg,transparent 0 calc(60mm/24 - 1px),#E3EAE6 calc(60mm/24 - 1px) calc(60mm/24));border:1px solid #DCE3DF"><use href="#i-pin" style="color:var(--monte)"/></svg>
+      <ul>
+        <li><b>Retícula de 24 × 24</b> con 2 px de margen interno.</li>
+        <li><b>Trazo de 1.8</b> con terminaciones rectas, igual al peso medio de SF Symbols.</li>
+        <li><b>Esquinas rectas</b> en los iconos propios, como piedra cortada. Los contenedores sí son redondos.</li>
+        <li><b>Contenedor circular</b> blanco o lienzo cuando el icono va solo en una tarjeta.</li>
+        <li><b>Color</b> tinta en navegación, monte dentro de tarjetas, blanco sobre la píldora activa.</li>
+      </ul>
+    </div>
+    <div class="card" style="width:96mm;flex:none">
+      <h3>Iconos de sistema</h3>
+      <p>Para acciones comunes se usan SF Symbols en iOS y Material Symbols Rounded en Android, con peso equivalente al trazo de 1.8.</p>
+      <div style="display:flex;gap:3mm;flex-wrap:wrap;margin-top:2mm">
+        <span class="rb solidbtn"><svg><use href="#i-back"/></svg></span>
+        <span class="rb solidbtn"><svg><use href="#i-close"/></svg></span>
+        <span class="rb solidbtn"><svg><use href="#i-aud"/></svg></span>
+        <span class="rb solidbtn"><svg><use href="#i-help"/></svg></span>
+        <span class="rb solidbtn"><svg><use href="#i-search"/></svg></span>
+        <span class="rb solidbtn"><svg><use href="#i-sun"/></svg></span>
+      </div>
+      <p style="margin-top:auto">Volver, cerrar, audio, ayuda, buscar y luz.</p>
+    </div>
+  </div>
+  <div class="foot"><span><b>Huapalcalco AR</b> · Línea gráfica 1.0</span><span>Eduardo Ignacio Castellón Castillo</span><span>9</span></div>
+</div>
+
+<!-- 10 SUPERFICIES -->
+<div class="page white">
+  <div class="head"><span class="eyebrow">08 · Superficies y forma</span><h2>Vidrio, sólido <span>y todo redondo</span></h2></div>
+  <div class="row" style="flex:1">
+    <div style="width:118mm;flex:none">
+      <div class="demo">
+        <img src="assets/hero.png" alt="">
+        <div style="position:absolute;top:6mm;left:6mm;right:6mm;display:flex;justify-content:space-between"><span class="rb glass"><svg><use href="#i-back"/></svg></span><span class="rb glass"><svg><use href="#i-aud"/></svg></span></div>
+        <div class="glass" style="position:absolute;left:6mm;right:6mm;bottom:6mm;border-radius:9mm;padding:6mm"><div style="font:800 18pt/1 var(--sf);letter-spacing:-.03em">Escalinata</div><div style="font:400 13pt var(--sf)">cara oriente</div></div>
+      </div>
+    </div>
+    <div class="grow" style="display:flex;flex-direction:column;gap:5mm">
+      <div class="g2">
+        <div class="card" style="background:var(--canvas);box-shadow:none"><span class="eyebrow">Vidrio</span><h3>Lo que flota</h3><p>Barra de pestañas, botones superiores, hoja de la parada, barra de herramientas del visor, marcadores del modelo y controles de AR. Se usa <code>GlassTabBar</code>, <code>GlassAppBar</code>, <code>GlassModalSheet</code> y <code>GlassIconButton</code>.</p></div>
+        <div class="card" style="background:var(--canvas);box-shadow:none"><span class="eyebrow">Sólido</span><h3>Lo que se lee</h3><p>Tarjetas, panel de ficha en tablet, listas, buscador y filtros. Se marcan con <code>GlassSurfaceStyle.solid</code>. Nunca se anida vidrio dentro de vidrio.</p></div>
+      </div>
+      <div class="card"><h3>Radios</h3>
+        <div class="radii">
+          <div><i style="width:30mm;height:12mm;border-radius:99px"></i>Píldora<br>botones y pestañas</div>
+          <div><i style="width:22mm;height:22mm;border-radius:9mm"></i>34 pt<br>hojas</div>
+          <div><i style="width:22mm;height:22mm;border-radius:7.4mm"></i>28 pt<br>tarjetas</div>
+          <div><i style="width:16mm;height:16mm;border-radius:5.8mm"></i>22 pt<br>mosaicos</div>
+          <div><i style="width:11mm;height:11mm;border-radius:50%"></i>42 pt<br>botón redondo</div>
+        </div>
+      </div>
+      <div class="card"><h3>Espaciado en múltiplos de 4</h3>
+        <div class="space">
+          <div><i style="width:4px;height:4px"></i>4</div><div><i style="width:8px;height:8px"></i>8</div><div><i style="width:12px;height:12px"></i>12</div><div><i style="width:16px;height:16px"></i>16</div><div><i style="width:24px;height:24px"></i>24</div><div><i style="width:32px;height:32px"></i>32</div><div><i style="width:48px;height:48px"></i>48</div>
+          <p style="margin-left:6mm;align-self:center">Margen lateral 16 pt en teléfono y 24 pt en tablet. Separación entre tarjetas 12 pt.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span><b>Huapalcalco AR</b> · Línea gráfica 1.0</span><span>Eduardo Ignacio Castellón Castillo</span><span>10</span></div>
+</div>
+
+<!-- 11 COMPONENTES -->
+<div class="page">
+  <div class="head"><span class="eyebrow">09 · Componentes</span><h2>Piezas <span>de la interfaz</span></h2></div>
+  <div class="g3" style="flex:1">
+    <div class="compbox"><span class="lbl">Botones</span><div class="stage"><span class="go"><svg><use href="#i-go"/></svg></span><span class="go" style="background:var(--white)"><svg><use href="#i-go"/></svg></span><span class="rb solidbtn"><svg><use href="#i-help"/></svg></span><span class="pill" style="background:var(--brote)"><svg style="width:18px;height:18px"><use href="#i-ar"/></svg>Ver en AR</span></div><p class="muted" style="font-size:8.5pt">Flecha en círculo brote para abrir. Píldora brote para la acción principal.</p></div>
+    <div class="compbox"><span class="lbl">Filtros</span><div class="stage"><div class="filters"><span class="on"><i><svg><use href="#i-sitio"/></svg></i>Arquitectura</span><span class="off"><svg><use href="#i-pin"/></svg></span><span class="off"><svg><use href="#i-acv"/></svg></span></div></div><p class="muted" style="font-size:8.5pt">El activo se expande con su nombre. Los inactivos muestran solo el icono.</p></div>
+    <div class="compbox"><span class="lbl">Búsqueda</span><div class="stage"><div class="search"><svg><use href="#i-search"/></svg>Buscar en el sitio<span class="f"><svg style="width:15px;height:15px"><use href="#i-filter"/></svg></span></div></div><p class="muted" style="font-size:8.5pt">Campo sólido blanco con borde de 1 px.</p></div>
+    <div class="compbox"><span class="lbl">Barra de pestañas</span><div class="stage" style="background:linear-gradient(135deg,#E3EAE6,#C9D3C2)"><div class="tabbar glass"><span class="t act"><svg><use href="#i-sitio"/></svg></span><span class="t"><svg><use href="#i-rec"/></svg></span><span class="ar"><svg><use href="#i-ar"/></svg></span><span class="t"><svg><use href="#i-est"/></svg></span><span class="t"><svg><use href="#i-acv"/></svg></span></div></div><p class="muted" style="font-size:8.5pt">Vidrio. Activo en píldora tinta. AR al centro como píldora blanca.</p></div>
+    <div class="compbox"><span class="lbl">Tarjeta</span><div class="stage"><div class="minicard"><h4>Pirámide<span>de tres cuerpos</span></h4><span class="go"><svg><use href="#i-go"/></svg></span><div class="mini"><div><b>12 m</b><span>Base</span></div><hr><div><b>3</b><span>Cuerpos</span></div></div></div></div><p class="muted" style="font-size:8.5pt">Blanco sólido, radio 28, título doble y dos datos.</p></div>
+    <div class="compbox"><span class="lbl">Dato y audio</span><div class="stage" style="flex-direction:column;align-items:stretch"><div style="display:flex;gap:8px"><div class="tile"><i><svg><use href="#i-comp"/></svg></i><span>Orientación<b>Oriente</b></span></div><div class="tile"><i><svg><use href="#i-stone"/></svg></i><span>Material<b>Piedra</b></span></div></div><div class="audio"><span class="go"><svg><use href="#i-play"/></svg></span><span class="bar"><i></i></span><span>0:38 / 1:40</span></div></div><p class="muted" style="font-size:8.5pt">Mosaicos en píldora con icono en círculo. Progreso en monte.</p></div>
+  </div>
+  <div class="foot"><span><b>Huapalcalco AR</b> · Línea gráfica 1.0</span><span>Eduardo Ignacio Castellón Castillo</span><span>11</span></div>
+</div>
+
+<!-- 12 TELEFONO -->
+<div class="page white">
+  <div class="head"><span class="eyebrow">10 · Pantallas de teléfono</span><h2>Inicio, parada <span>y AR</span></h2></div>
+  <div class="devices">
+    <div class="phone">
+      <div class="status"><span>9:41</span><i><b style="width:3px;height:6px"></b><b style="width:3px;height:8px"></b><b style="width:3px;height:10px"></b><b style="width:20px;height:9px;border-radius:3px"></b></i></div>
+      <div class="scr">
+        <div class="topbar"><div><div style="font:500 12.5px var(--sf);color:var(--ink2)">Tulancingo, Hidalgo</div><div style="font:800 28px/1.05 var(--sf);letter-spacing:-.03em">Huapalcalco</div></div><span class="rb solidbtn"><svg><use href="#i-help"/></svg></span></div>
+        <div class="search" style="flex:none"><svg><use href="#i-search"/></svg>Buscar en el sitio<span class="f"><svg style="width:15px;height:15px"><use href="#i-filter"/></svg></span></div>
+        <div class="filters"><span class="on"><i><svg><use href="#i-sitio"/></svg></i>Arquitectura</span><span class="off"><svg><use href="#i-pin"/></svg></span><span class="off"><svg><use href="#i-acv"/></svg></span><span class="off"><svg><use href="#i-est"/></svg></span></div>
+        <div class="bigcard"><h4>Pirámide<span>de tres cuerpos</span></h4><span class="go"><svg><use href="#i-go"/></svg></span><img src="assets/hero.png" alt=""><div class="mini"><div><b>12 m</b><span>Base</span></div><hr><div><b>3</b><span>Cuerpos</span></div></div></div>
+        <div class="limecard"><h4>Recorrido<span>6 paradas · 20 min</span></h4><span class="go"><svg><use href="#i-go"/></svg></span></div>
+      </div>
+      <div class="tabbar glass"><span class="t act"><svg><use href="#i-sitio"/></svg></span><span class="t"><svg><use href="#i-rec"/></svg></span><span class="ar"><svg><use href="#i-ar"/></svg></span><span class="t"><svg><use href="#i-est"/></svg></span><span class="t"><svg><use href="#i-acv"/></svg></span></div>
+    </div>
+    <div class="phone">
+      <div class="photo"><img src="assets/oblique.png" alt=""></div>
+      <div class="status"><span>9:41</span><i><b style="width:3px;height:6px"></b><b style="width:3px;height:8px"></b><b style="width:3px;height:10px"></b><b style="width:20px;height:9px;border-radius:3px"></b></i></div>
+      <div class="scr" style="z-index:2"><div class="topbar"><span class="rb glass"><svg><use href="#i-back"/></svg></span><span class="rb glass"><svg><use href="#i-aud"/></svg></span></div></div>
+      <div class="vbar"><i></i><b class="glass">2/6</b></div>
+      <div class="sheet glass"><h4>Escalinata<span>cara oriente</span></h4>
+        <div class="tiles">
+          <div class="tile"><i><svg><use href="#i-comp"/></svg></i><span>Orientación<b>Oriente</b></span></div>
+          <div class="tile"><i><svg><use href="#i-stone"/></svg></i><span>Material<b>Piedra</b></span></div>
+          <div class="tile"><i><svg><use href="#i-aud"/></svg></i><span>Audio<b>1:40 min</b></span></div>
+          <div class="tile"><i><svg><use href="#i-ar"/></svg></i><span>Ver en<b>AR</b></span></div>
+        </div>
+      </div>
+    </div>
+    <div class="phone">
+      <div class="cam"><img src="assets/hero.png" alt=""></div>
+      <div class="status"><span>9:41</span><i><b style="width:3px;height:6px"></b><b style="width:3px;height:8px"></b><b style="width:3px;height:10px"></b><b style="width:20px;height:9px;border-radius:3px"></b></i></div>
+      <div class="scr" style="z-index:5"><div class="topbar"><span class="rb glass"><svg><use href="#i-close"/></svg></span><span class="rb glass"><svg><use href="#i-sun"/></svg></span></div></div>
+      <div class="scalepill glass"><span>1:50</span><b>33 cm</b></div>
+      <div class="brk"><i></i><i></i><i></i><i></i></div>
+      <div class="arcard"><div><h4>Fija la maqueta<span>en una mesa</span></h4></div><span class="go"><svg><use href="#i-check"/></svg></span></div>
+    </div>
+  </div>
+  <div class="g3" style="margin-top:-2mm">
+    <p class="devnote">Inicio. Tarjetas sólidas en blanco. Solo la barra de pestañas es de vidrio.</p>
+    <p class="devnote">Parada. El modelo ocupa la pantalla y la hoja de vidrio refracta su textura.</p>
+    <p class="devnote">AR. Controles de vidrio sobre la cámara y escala inicial 1:50.</p>
+  </div>
+  <div class="foot"><span><b>Huapalcalco AR</b> · Línea gráfica 1.0</span><span>Eduardo Ignacio Castellón Castillo</span><span>12</span></div>
+</div>
+
+<!-- 13 TABLET -->
+<div class="page">
+  <div class="head"><span class="eyebrow">11 · Pantallas de tablet</span><h2>Tres paneles <span>en horizontal</span></h2></div>
+  <div class="row" style="flex:1;align-items:flex-start">
+    <div class="tablet">
+      <div class="tgrid">
+        <div class="rail">
+          <div class="brand"><svg class="pyr" viewBox="0 0 1024 1024" style="width:34px;height:34px;border-radius:9px"><use href="#pyr"/></svg><div><b>Huapalcalco</b><span>Tulancingo, Hgo.</span></div></div>
+          <span class="ri"><svg><use href="#i-sitio"/></svg>Sitio</span>
+          <span class="ri act"><svg><use href="#i-rec"/></svg>Recorrido</span>
+          <span class="ri"><svg><use href="#i-est"/></svg>Estratos</span>
+          <span class="ri"><svg><use href="#i-pin"/></svg>Pinturas</span>
+          <span class="ri"><svg><use href="#i-acv"/></svg>Acervo</span>
+          <span class="ri arbig"><svg><use href="#i-ar"/></svg>Ver en AR</span>
+        </div>
+        <div class="tstage">
+          <div class="stagehead"><h4>Recorrido<span>por la plaza</span></h4><div class="acts"><span class="rb solidbtn"><svg><use href="#i-aud"/></svg></span><span class="rb solidbtn"><svg><use href="#i-help"/></svg></span></div></div>
+          <div class="stageimg">
+            <img src="assets/oblique.png" alt="">
+            <span class="pin" style="left:38%;top:40%"><b class="glass">Pirámide</b><i></i></span>
+            <span class="pin act" style="left:57%;top:46%"><b>Escalinata</b><i></i></span>
+            <span class="pin" style="left:68%;top:27%"><b class="glass">Monolito</b><i></i></span>
+            <span class="pin" style="left:76%;top:52%"><b class="glass">Plaza</b><i></i></span>
+            <span class="pin" style="left:29%;top:26%"><b class="glass">Plataforma norte</b><i></i></span>
+            <span class="pin" style="left:36%;top:64%"><b class="glass">Cubierta</b><i></i></span>
+          </div>
+          <div class="toolbar glass"><span class="on"><svg><use href="#i-orbit"/></svg>Orbitar</span><span><svg><use href="#i-layers"/></svg>Capas</span><span><svg><use href="#i-sun"/></svg>Luz</span></div>
+        </div>
+        <div class="panel">
+          <span class="eyebrow">Parada 2 de 6</span>
+          <h4>Escalinata<span>cara oriente</span></h4>
+          <p>La escalinata mira hacia la plaza. Desde aquí se ve el monolito en su recinto y el trazo de los cuerpos de la pirámide.</p>
+          <div class="audio"><span class="go"><svg><use href="#i-play"/></svg></span><span class="bar"><i></i></span><span>0:38 / 1:40</span></div>
+          <div class="stops">
+            <div class="stop done"><i>1</i>Pirámide</div><div class="stop now"><i>2</i>Escalinata</div><div class="stop"><i>3</i>Plaza</div><div class="stop"><i>4</i>Monolito</div><div class="stop"><i>5</i>Plataforma norte</div><div class="stop"><i>6</i>Cubierta</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="grow" style="display:flex;flex-direction:column;gap:4mm">
+      <p class="muted" style="font-size:9.5pt">La tablet no es un teléfono ampliado. La navegación pasa a una barra lateral, el modelo queda al centro y la ficha vive en un panel fijo. Leer no tapa la pirámide.</p>
+      <div class="card" style="padding:4.5mm"><span class="eyebrow">Menos de 600 pt</span><h3>Teléfono</h3><p>Barra de pestañas inferior. Fichas en hojas sobre el modelo.</p></div>
+      <div class="card" style="padding:4.5mm"><span class="eyebrow">600 a 1023 pt</span><h3>Tablet vertical</h3><p>Modelo en la mitad superior, ficha abajo y barra lateral solo con iconos.</p></div>
+      <div class="card" style="padding:4.5mm"><span class="eyebrow">1024 pt o más</span><h3>Tablet horizontal</h3><p>Tres paneles. El panel derecho se oculta para ver el modelo completo.</p></div>
+    </div>
+  </div>
+  <div class="foot"><span><b>Huapalcalco AR</b> · Línea gráfica 1.0</span><span>Eduardo Ignacio Castellón Castillo</span><span>13</span></div>
+</div>
+
+<!-- 14 MODELO -->
+<div class="page white">
+  <div class="head"><span class="eyebrow">12 · El modelo 3D</span><h2>La captura <span>del dron</span></h2></div>
+  <div class="row" style="flex:1;min-height:0">
+    <div class="render grow" style="background:var(--canvas);box-shadow:none"><img src="assets/hero.png" alt="Render oblicuo del modelo"></div>
+    <div style="width:92mm;flex:none;display:flex;flex-direction:column;gap:4mm">
+      <ul>
+        <li><b>Fuente.</b> Fotogrametría con dron DJI, archivo GLB de 23.9 MB, 133,022 triángulos y textura de 8192 px.</li>
+        <li><b>Escala.</b> En metros. El relieve conservado es de 3 m.</li>
+        <li><b>Paradas.</b> Pirámide, escalinata oriente, plaza, monolito, plataforma norte y zona bajo la cubierta. Nombres sujetos a validación del INAH.</li>
+        <li><b>AR.</b> Escala inicial 1:50, la maqueta mide 33 cm y cabe en una mesa.</li>
+        <li><b>Presentación.</b> Siempre sobre lienzo o blanco, con la textura sin sombras añadidas. Nunca se recolorea el modelo.</li>
+        <li><b>Archivos.</b> Visor con textura de 4K, AR en Android con GLB de 2K y AR en iOS con USDZ.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>16.7 × 13.4 m</b><span>Huella del terreno</span></div>
+    <div class="stat"><b>3.0 m</b><span>Relieve total</span></div>
+    <div class="stat"><b>~10 m</b><span>Lado de la pirámide</span></div>
+    <div class="stat"><b>1:50</b><span>Escala inicial en AR</span></div>
+  </div>
+  <div class="foot"><span><b>Huapalcalco AR</b> · Línea gráfica 1.0</span><span>Eduardo Ignacio Castellón Castillo</span><span>14</span></div>
+</div>
+
+<!-- 15 TOKENS -->
+<div class="page">
+  <div class="head"><span class="eyebrow">13 · Tokens para Flutter</span><h2>El sistema <span>en código</span></h2></div>
+  <div class="row" style="flex:1">
+<pre class="grow"><span class="c">// lib/theme/hp_colors.dart</span>
+<span class="k">abstract final class</span> HpColors {
+  <span class="k">static const</span> white   = Color(0xFFFFFFFF); <span class="c">// tarjetas, hojas</span>
+  <span class="k">static const</span> canvas  = Color(0xFFEEF2F0); <span class="c">// fondo</span>
+  <span class="k">static const</span> brote   = Color(0xFF9BE36D); <span class="c">// acción principal</span>
+  <span class="k">static const</span> ink     = Color(0xFF0B1210); <span class="c">// texto, activo</span>
+  <span class="k">static const</span> monte   = Color(0xFF134E32); <span class="c">// iconos, progreso</span>
+  <span class="k">static const</span> stone   = Color(0xFF5E6A65); <span class="c">// secundario</span>
+  <span class="k">static const</span> almagre = Color(0xFFC2492F); <span class="c">// pintura rupestre</span>
+  <span class="k">static const</span> line    = Color(0xFFDCE3DF); <span class="c">// filetes</span>
+}
+
+<span class="k">abstract final class</span> HpRadius {
+  <span class="k">static const</span> tile = 22.0, card = 28.0, sheet = 34.0;
+  <span class="k">static const</span> pill = 999.0, button = 21.0;
+}
+
+<span class="k">abstract final class</span> HpSpace {
+  <span class="k">static const</span> s4 = 4.0, s8 = 8.0, s12 = 12.0, s16 = 16.0;
+  <span class="k">static const</span> s24 = 24.0, s32 = 32.0, s48 = 48.0;
+}
+
+<span class="k">abstract final class</span> HpBreakpoints {
+  <span class="k">static const</span> tablet = 600.0, tabletWide = 1024.0;
+}</pre>
+<pre class="grow"><span class="c">// lib/theme/hp_type.dart</span>
+<span class="c">// iOS: fuente del sistema (SF Pro). Android: Plus Jakarta Sans.</span>
+String? hpFamily(TargetPlatform p) =&gt;
+    p == TargetPlatform.iOS ? <span class="k">null</span> : <span class="s">'PlusJakartaSans'</span>;
+
+<span class="k">abstract final class</span> HpText {
+  <span class="k">static const</span> display    = TextStyle(fontSize: 34,
+      fontWeight: FontWeight.w800, letterSpacing: -1.2, height: 1.0);
+  <span class="k">static const</span> displaySub = TextStyle(fontSize: 24,
+      fontWeight: FontWeight.w400, letterSpacing: -0.5);
+  <span class="k">static const</span> title      = TextStyle(fontSize: 20,
+      fontWeight: FontWeight.w700, letterSpacing: -0.4);
+  <span class="k">static const</span> body       = TextStyle(fontSize: 16, height: 1.5);
+  <span class="k">static const</span> data       = TextStyle(fontSize: 20,
+      fontWeight: FontWeight.w700,
+      fontFeatures: [FontFeature.tabularFigures()]);
+  <span class="k">static const</span> caption    = TextStyle(fontSize: 12,
+      fontWeight: FontWeight.w500, color: HpColors.stone);
+}
+
+<span class="c">// main.dart: LiquidGlassWidgets.initialize() antes de runApp,</span>
+<span class="c">// LiquidGlassWidgets.wrap(theme: GlassThemeData.ios27()),</span>
+<span class="c">// GlassScaffold en cada pantalla, contenido en</span>
+<span class="c">// GlassSurfaceStyle.solid. Tema claro únicamente.</span></pre>
+  </div>
+  <div class="foot"><span><b>Huapalcalco AR</b> · Línea gráfica 1.0</span><span>Eduardo Ignacio Castellón Castillo</span><span>15</span></div>
+</div>
+
+<!-- 16 CREDITOS -->
+<div class="page white">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8mm;flex:1;text-align:center">
+    <svg class="icon pyr" viewBox="0 0 1024 1024" style="width:34mm;height:34mm"><use href="#pyr"/></svg>
+    <div><div style="font:800 34pt/1 var(--sf);letter-spacing:-.035em">Huapalcalco</div><div style="font:400 17pt/1.3 var(--sf);color:var(--ink2)">en realidad aumentada</div></div>
+    <div class="meta" style="grid-template-columns:auto auto;margin-top:4mm;text-align:left">
+      <span>Diseño y desarrollo</span><b>Eduardo Ignacio Castellón Castillo</b>
+      <span>Documento</span><b>Manual de línea gráfica, versión 1.0</b>
+      <span>Fecha</span><b>Noviembre de 2026</b>
+    </div>
+    <div class="logos" style="margin-top:6mm">
+      <img src="assets/logo-inah.png" alt="INAH" style="height:26mm">
+      <i style="height:20mm"></i>
+      <img src="assets/logo-upiih.png" alt="UPIIH" style="height:26mm">
+    </div>
+    <p class="muted" style="font-size:8.5pt;max-width:160mm">Proyecto en conjunto con el Instituto Nacional de Antropología e Historia. Las fechas, nombres de estructuras y datos históricos están sujetos a validación del INAH. El modelo tridimensional proviene de levantamiento fotogramétrico con dron.</p>
+  </div>
+</div>
+
+</body>
+</html>
