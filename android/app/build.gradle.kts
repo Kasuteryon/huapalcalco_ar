@@ -1,5 +1,7 @@
 plugins {
     id("com.android.application")
+    // Compose solo se usa en la pantalla nativa de AR (ArActivity).
+    id("org.jetbrains.kotlin.plugin.compose")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
@@ -29,6 +31,10 @@ android {
         versionName = flutter.versionName
     }
 
+    buildFeatures {
+        compose = true
+    }
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.
@@ -46,4 +52,14 @@ kotlin {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    // AR en Android: ARCore + Filament. La 4.18.0 es la última compatible con
+    // AGP 9.1, compileSdk 36 y Kotlin 2.4 (las 4.6x piden AGP 9.4 y compileSdk 37).
+    implementation("io.github.sceneview:arsceneview:4.18.0")
+    implementation("androidx.activity:activity-compose:1.12.4")
+    implementation(platform("androidx.compose:compose-bom:2026.05.01"))
+    implementation("androidx.compose.foundation:foundation")
+    implementation("androidx.compose.ui:ui")
 }

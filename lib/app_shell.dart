@@ -54,10 +54,8 @@ class _AppShellState extends State<AppShell> {
   Future<void> _openAr() async {
     try {
       await ArLauncher.open();
-    } on UnsupportedError catch (e) {
-      _toast(
-        e.message ?? 'La realidad aumentada no está disponible en este equipo.',
-      );
+    } on ArUnavailable catch (e) {
+      _toast(e.message);
     } catch (_) {
       _toast('No se pudo abrir la maqueta en AR. Intenta de nuevo.');
     }

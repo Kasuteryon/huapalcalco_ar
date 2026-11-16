@@ -11,34 +11,38 @@ class _Layer {
   final bool rockArt;
 }
 
-// De lo más reciente (arriba) a lo más profundo (abajo), como en una excavación.
-// Las fechas se agregan cuando el INAH las valide.
+// Las cinco ocupaciones que describe la ficha oficial del INAH
+// (https://lugares.inah.gob.mx/es/node/4414), de la más reciente (arriba) a la
+// más antigua (abajo), como se lee una excavación.
 const _layers = [
   _Layer(
-    'Hoy',
-    'zona de monumentos',
-    'El INAH resguarda el sitio y continúa su investigación. La mayor parte del asentamiento sigue sin excavar.',
+    'Posclásico tardío',
+    'cerámica azteca',
+    'Cerámica de las fases Azteca III y IV, propias de la Cuenca de México.',
   ),
   _Layer(
-    'Tradición tolteca',
-    'Ce Ácatl Topiltzin',
-    'La tradición cuenta que aquí construyó su casa de madera, el huapalcalli, antes de gobernar Tula.',
+    'Epiclásico',
+    '650 a 900 d. C.',
+    'Monumentos y cerámica que podrían ser antecedentes de la cultura tolteca. '
+        'Aquí están las primeras referencias históricas de Ce Ácatl Topiltzin '
+        'Quetzalcóatl, que después gobernó Tula.',
   ),
   _Layer(
-    'Centro ceremonial',
+    'Estructura VI',
     'influencia teotihuacana',
-    'Se levantan la plaza y la pirámide de tres cuerpos, con acabados de estuco y pintura mural.',
+    'Un asentamiento cuya arquitectura muestra influencia de Teotihuacan.',
   ),
   _Layer(
-    'Pinturas rupestres',
-    'antigüedad en estudio',
-    'Las propuestas van desde grupos de cazadores hasta tradiciones mesoamericanas posteriores.',
+    'Preclásico tardío',
+    'asentamiento pequeño',
+    'Un pequeño caserío ocupó el lugar.',
+  ),
+  _Layer(
+    'Prehistoria',
+    'hacia 7000 a. C.',
+    'Puntas de proyectil tipo Meserve y un hacha de mano. En los acantilados '
+        'de los cerros La Mesa y El Tecolote hay pinturas rupestres.',
     rockArt: true,
-  ),
-  _Layer(
-    'Abrigos rocosos',
-    'primeros ocupantes',
-    'Los grupos más antiguos del valle se refugiaron en los abrigos de los acantilados de La Mesa y El Huiztli.',
   ),
 ];
 
@@ -76,7 +80,7 @@ class LayersScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: HpSpace.s8),
-        Text('Fechas por validar con el INAH.', style: HpText.caption),
+        Text('Fuente: ficha oficial del INAH.', style: HpText.caption),
       ],
     );
   }

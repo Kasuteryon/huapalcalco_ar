@@ -68,7 +68,10 @@ class SiteController extends ChangeNotifier {
         _center = sum / _poi.length.toDouble();
         _center.y = 0.8;
       }
+      // Si eligieron una parada mientras cargaba, se respeta al terminar.
+      final pending = selected;
       _snapToOverview();
+      if (pending != null) selectStop(pending);
       ready = true;
     } catch (e, st) {
       error = e;

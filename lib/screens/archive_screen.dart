@@ -14,31 +14,59 @@ class ArchiveScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final pad = MediaQuery.paddingOf(context);
     final side = wide ? HpSpace.s32 : HpSpace.s16;
+    // Fuente: ficha oficial del INAH (https://lugares.inah.gob.mx/es/node/4414).
+    // El significado del nombre viene de la Foto del día del INAH,
+    // "Huapalcalco: primer hogar de Ce Ácatl Topiltzin" (27 de junio de 2023).
     final cards = <Widget>[
       const _Entry(
         eyebrow: 'EL NOMBRE',
-        title: 'Lugar de la casa',
-        complement: 'de madera',
-        body: 'Huapalcalco viene del náhuatl huapalli, tabla o viga, y calli, casa, con el locativo co.',
+        title: 'Casa de madera',
+        complement: 'huapalcalli',
+        body:
+            'Se dice que aquí Ce Ácatl Topiltzin construyó su huapalcalli, una '
+            'casa de madera, que da nombre a la zona arqueológica.',
       ),
       const _Entry(
         eyebrow: 'PINTURA RUPESTRE',
         eyebrowColor: HpColors.almagre,
-        title: 'Rojo sobre roca',
-        complement: 'en los abrigos',
-        body: 'Figuras humanas, un cazador con átlatl, una lagartija, manos y astros, en varios tonos de rojo, blanco y negro.',
+        title: 'En los acantilados',
+        complement: 'de La Mesa y El Tecolote',
+        body:
+            'Las pinturas rupestres pertenecen a la ocupación más antigua del '
+            'sitio, junto con puntas de proyectil y un hacha de mano.',
       ),
       const _Entry(
-        eyebrow: 'LEYENDA',
-        title: 'El puente',
-        complement: 'del 24 de junio',
-        body: 'Se cuenta que la ciudad quedó enterrada y que a medianoche del 24 de junio aparece un puente sobre la pirámide.',
+        eyebrow: 'OBSIDIANA',
+        title: 'Centro regional',
+        complement: 'y cruce de caminos',
+        body:
+            'Huapalcalco aprovechó el yacimiento de obsidiana de El Pizarrín y '
+            'fue paso entre la Cuenca de México y la Huasteca.',
       ),
       const _Entry(
-        eyebrow: 'CUIDADO DEL SITIO',
-        title: 'Mira sin tocar',
-        complement: 'y sin rayar',
-        body: 'Las pinturas y los muros se dañan con el contacto y el grafiti. Camina solo por los senderos abiertos al público.',
+        eyebrow: 'HALLAZGOS',
+        title: 'Yugos y fuego',
+        complement: 'piezas del sitio',
+        body:
+            'Dos yugos de origen totonaco, una escultura del Dios Viejo del '
+            'Fuego, material de obsidiana y cerámica de varias épocas.',
+      ),
+      const _Entry(
+        eyebrow: 'EXPLORACIÓN',
+        title: 'Desde 1954',
+        complement: 'Müller y Lizardi Ramos',
+        body:
+            'Las exploraciones comenzaron en 1954 con Florencia J. Müller y '
+            'César Lizardi Ramos. Ese año se restauró la plaza ceremonial.',
+      ),
+      const _Entry(
+        eyebrow: 'PLANEA TU VISITA',
+        title: 'Todos los días',
+        complement: 'de 9:00 a 17:00',
+        body:
+            'Último acceso a las 16:00. Entrada gratuita y visitas guiadas. '
+            'No se permite fumar, introducir alimentos ni mascotas. '
+            'Teléfono: 771 714 3520.',
       ),
     ];
     return ListView(
@@ -54,7 +82,7 @@ class ArchiveScreen extends StatelessWidget {
               crossAxisCount: 2,
               mainAxisSpacing: 12,
               crossAxisSpacing: 12,
-              mainAxisExtent: 236,
+              mainAxisExtent: 250,
             ),
             children: cards,
           )

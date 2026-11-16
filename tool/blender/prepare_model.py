@@ -1,12 +1,18 @@
 """Prepara los archivos del modelo para el app.
 
 Genera, a partir del GLB original del dron:
-  assets/models/huapalcalco.glb   visor 3D, textura de 4096 px, material sin iluminación,
-                                  con un nodo vacío por parada (poi_<id>)
-  assets/models/huapalcalco.usdz  AR en iOS (Quick Look), textura de 2048 px, escala 1:50
+  <salida>/huapalcalco.glb       visor 3D, textura de 4096 px, material sin iluminación,
+                                 con un nodo vacío por parada (poi_<id>)
+  <salida>/huapalcalco.usdz      AR en iOS (Quick Look), textura de 2048 px, escala 1:50
+  <android>/huapalcalco_ar.glb   AR en Android (SceneView), textura de 2048 px, escala 1:50
 
 Uso:
-  Blender -b --factory-startup -P tool/blender/prepare_model.py -- <glb original> <carpeta salida>
+  Blender -b --factory-startup -P tool/blender/prepare_model.py -- \
+      <glb original> assets/models android/app/src/main/assets/models
+
+Orientación según el INAH: la escalinata de la pirámide mira al poniente y la
+plaza queda al poniente de la pirámide. En la planta de render_plan.py el
+poniente está arriba y el norte a la derecha.
 """
 import os
 import sys
@@ -21,17 +27,18 @@ from model_common import import_and_center  # noqa: E402
 PLAN_SCALE = 17.3193
 STOPS = {
     'plaza': (620, 230),
-    'monolito': (423, 145),
+    'altar': (423, 145),
     'escalinata': (440, 405),
     'piramide': (450, 610),
     'cubierta': (575, 705),
-    'plataforma': (180, 610),
+    'anexo': (930, 290),
 }
 AR_SCALE = 1 / 50
 
 argv = sys.argv[sys.argv.index("--") + 1:]
-src, out_dir = argv[0], argv[1]
+src, out_dir, android_dir = argv[0], argv[1], argv[2]
 os.makedirs(out_dir, exist_ok=True)
+os.makedirs(android_dir, exist_ok=True)
 
 obj, size = import_and_center(src)
 scene = bpy.context.scene
@@ -92,5 +99,15 @@ bpy.ops.wm.usd_export(
     export_textures=True,
     export_normals=False,
     export_uvmaps=True,
+)
+
+# GLB de AR para Android: misma escala y textura que el USDZ, sin iluminación.
+nt.links.new(bg.outputs[0], out_node.inputs[0])
+bpy.ops.export_scene.gltf(
+    filepath=os.path.join(android_dir, 'huapalcalco_ar.glb'),
+    export_format='GLB',
+    export_image_format='JPEG',
+    export_jpeg_quality=85,
+    export_yup=True,
 )
 print("DONE", tuple(round(v, 3) for v in size))

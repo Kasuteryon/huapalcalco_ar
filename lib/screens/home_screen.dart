@@ -141,7 +141,7 @@ class _PyramidCard extends StatelessWidget {
                       Expanded(
                         child: TitlePair(
                           'Pirámide',
-                          'de tres cuerpos',
+                          'principal',
                           size: large ? 34 : 28,
                         ),
                       ),
@@ -176,9 +176,9 @@ class _MiniStats extends StatelessWidget {
     return IntrinsicHeight(
       child: Row(
         children: [
-          stat('16.7 m', 'Frente del sitio'),
+          stat('8', 'Escalones'),
           const VerticalDivider(width: 24, color: HpColors.line),
-          stat('3', 'Cuerpos'),
+          stat('1954', 'Primera exploración'),
         ],
       ),
     );

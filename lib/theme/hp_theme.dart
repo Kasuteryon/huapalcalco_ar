@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Paleta de la línea gráfica 1.0. Solo tema claro.
@@ -34,14 +33,9 @@ abstract final class HpBreakpoints {
   static const tabletWide = 1024.0;
 }
 
-/// En iOS se usa la fuente del sistema (SF Pro). La licencia de SF Pro solo
-/// permite usarla en plataformas de Apple, así que en Android va Plus Jakarta Sans.
-String? hpFontFamily() {
-  final p = defaultTargetPlatform;
-  return (p == TargetPlatform.iOS || p == TargetPlatform.macOS)
-      ? null
-      : 'PlusJakartaSans';
-}
+/// Plus Jakarta Sans en todas las plataformas, para que el app se vea igual en
+/// iOS, iPadOS y Android. Los archivos van en assets/fonts (licencia SIL OFL).
+const String hpFontFamily = 'PlusJakartaSans';
 
 abstract final class HpText {
   static TextStyle get display => const TextStyle(
@@ -92,7 +86,7 @@ ThemeData buildHpTheme() {
   final base = ThemeData(
     useMaterial3: true,
     brightness: Brightness.light,
-    fontFamily: hpFontFamily(),
+    fontFamily: hpFontFamily,
     scaffoldBackgroundColor: HpColors.canvas,
     colorScheme: const ColorScheme.light(
       primary: HpColors.ink,

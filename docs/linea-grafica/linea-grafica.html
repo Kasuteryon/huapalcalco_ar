@@ -3,16 +3,20 @@
 <head>
 <meta charset="utf-8">
 <title>Huapalcalco AR · Línea gráfica</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
 <style>
 @page{size:297mm 210mm;margin:0}
+@font-face{font-family:'PJS';src:url('../../assets/fonts/PlusJakartaSans-Regular.ttf') format('truetype');font-weight:400;font-style:normal}
+@font-face{font-family:'PJS';src:url('../../assets/fonts/PlusJakartaSans-Medium.ttf') format('truetype');font-weight:500;font-style:normal}
+@font-face{font-family:'PJS';src:url('../../assets/fonts/PlusJakartaSans-SemiBold.ttf') format('truetype');font-weight:600;font-style:normal}
+@font-face{font-family:'PJS';src:url('../../assets/fonts/PlusJakartaSans-Bold.ttf') format('truetype');font-weight:700;font-style:normal}
+@font-face{font-family:'PJS';src:url('../../assets/fonts/PlusJakartaSans-ExtraBold.ttf') format('truetype');font-weight:800;font-style:normal}
 :root{
   --canvas:#EEF2F0; --white:#FFFFFF; --line:#DCE3DF; --fill:#E6ECE9;
   --ink:#0B1210; --ink2:#5E6A65; --brote:#9BE36D; --monte:#134E32; --almagre:#C2492F;
-  --sf:"SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
-  --jk:"Plus Jakarta Sans",sans-serif;
+  --sf:"PJS","Plus Jakarta Sans",sans-serif;
+  --jk:"PJS","Plus Jakarta Sans",sans-serif;
   --mono:"SF Mono",ui-monospace,Menlo,monospace;
-  --shadow:0 1px 2px rgba(11,18,16,.05),0 10px 26px rgba(11,18,16,.07);
+  --shadow:none;
 }
 *{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 html,body{margin:0;background:#9aa49f}
@@ -91,7 +95,7 @@ td .dot{display:inline-block;width:3.2mm;height:3.2mm;border-radius:50%;vertical
 /* tipo */
 .aa{font-size:92pt;line-height:.9;font-weight:800;letter-spacing:-.04em}
 .chars{font-size:13pt;line-height:1.5;color:var(--ink2);word-break:break-all}
-.scale div{display:grid;grid-template-columns:32mm 1fr 26mm;gap:4mm;align-items:baseline;border-bottom:1px solid var(--line);padding:2.4mm 0}
+.scale div{display:grid;grid-template-columns:44mm 1fr 30mm;gap:4mm;align-items:baseline;border-bottom:1px solid var(--line);padding:1.8mm 0}
 .scale code{font-size:7.5pt;color:var(--ink2)}
 
 /* iconos */
@@ -189,7 +193,7 @@ td .dot{display:inline-block;width:3.2mm;height:3.2mm;border-radius:50%;vertical
 .tiles .tile{background:rgba(255,255,255,.75);padding:5px}
 .cam{position:absolute;inset:0;background:linear-gradient(180deg,#C9D9E3 0%,#DCE6E2 38%,#8E9B7E 38.2%,#A7B092 100%)}
 .cam::after{content:"";position:absolute;left:-10%;right:-10%;top:52%;height:30%;background:#B9A78B;transform:perspective(300px) rotateX(55deg);border-radius:6px;opacity:.9}
-.cam img{position:absolute;left:8%;width:84%;top:47%;z-index:2;filter:drop-shadow(0 18px 14px rgba(0,0,0,.25))}
+.cam img{position:absolute;left:8%;width:84%;top:47%;z-index:2}
 .brk{position:absolute;left:30px;right:30px;top:150px;height:260px;z-index:3}
 .brk i{position:absolute;width:44px;height:44px;border:3px solid var(--white)}
 .brk i:nth-child(1){left:0;top:0;border-right:0;border-bottom:0;border-radius:18px 0 0 0}
@@ -254,6 +258,16 @@ pre .k{color:var(--brote)} pre .c{color:#8A9690} pre .s{color:#F0B4A6}
 ul{margin:0;padding-left:5mm;display:flex;flex-direction:column;gap:1.5mm;font-size:9.5pt}
 ul li{color:var(--ink2)}
 ul li b{color:var(--ink)}
+/* Impresión limpia: sin box-shadow, filter ni backdrop-filter. Los visores de PDF
+   (Vista Previa, Acrobat) aplanan esos efectos como recuadros grises. La separación
+   entre superficies se marca con filetes de 1 px. */
+*,*::before,*::after{box-shadow:none !important;text-shadow:none !important;filter:none !important;-webkit-backdrop-filter:none !important;backdrop-filter:none !important}
+.glass{background:rgba(255,255,255,.82)}
+.page.white .card:not([style*="canvas"]),.page.white .compbox,.page.white .render:not([style*="canvas"]),.page.white .stat,.page.white .minicard,.radii i,.solidbtn,.tabbar .ar,.toolbar .on,.icon{outline:1px solid var(--line);outline-offset:-1px}
+.phone,.tablet{outline:1px solid var(--line)}
+.glass{border:1px solid var(--line) !important}
+.bad-effect{position:relative}
+.bad-effect::before{content:"";position:absolute;inset:0;transform:translate(1.6mm,1.6mm);border-radius:22.5%;background:#9aa49f}
 </style>
 </head>
 <body>
@@ -364,7 +378,7 @@ ul li b{color:var(--ink)}
           <line x1="512" y1="0" x2="512" y2="1024"/>
           <line x1="0" y1="640" x2="1024" y2="640"/><line x1="0" y1="456" x2="1024" y2="456"/><line x1="0" y1="296" x2="1024" y2="296"/>
         </g>
-        <g fill="#134E32" font-family="SF Pro Text, -apple-system, sans-serif" font-size="30" font-weight="600">
+        <g fill="#134E32" font-family="PJS, Plus Jakarta Sans, sans-serif" font-size="30" font-weight="600">
           <text x="900" y="805">808</text><text x="900" y="637">640</text><text x="900" y="453">456</text><text x="900" y="293">296</text><text x="900" y="221">224</text>
           <text x="140" y="40">136</text><text x="760" y="40">888</text>
         </g>
@@ -415,7 +429,7 @@ ul li b{color:var(--ink)}
         <div class="bad" style="text-align:center"><svg class="icon pyr" viewBox="0 0 1024 1024" style="width:20mm;height:20mm;transform:rotate(-12deg)"><use href="#pyr"/></svg><p style="margin-top:2mm">Rotar</p></div>
         <div class="bad" style="text-align:center"><svg class="icon pyr" viewBox="0 0 1024 1024" style="width:26mm;height:16mm" preserveAspectRatio="none"><use href="#pyr"/></svg><p style="margin-top:2mm">Deformar</p></div>
         <div class="bad" style="text-align:center"><svg class="icon pyr" viewBox="0 0 1024 1024" style="width:20mm;height:20mm;--bgc:#C2492F"><use href="#pyr"/></svg><p style="margin-top:2mm">Otros colores</p></div>
-        <div class="bad" style="text-align:center"><svg class="icon pyr" viewBox="0 0 1024 1024" style="width:20mm;height:20mm;filter:drop-shadow(3px 5px 3px rgba(0,0,0,.5)) saturate(1.8)"><use href="#pyr"/></svg><p style="margin-top:2mm">Efectos</p></div>
+        <div class="bad" style="text-align:center"><span class="bad-effect" style="display:inline-block;width:20mm;height:20mm"><svg class="icon pyr" viewBox="0 0 1024 1024" style="position:relative;width:20mm;height:20mm;--bgc:#6CF02A"><use href="#pyr"/></svg></span><p style="margin-top:2mm">Efectos</p></div>
       </div>
     </div>
   </div>
@@ -440,7 +454,7 @@ ul li b{color:var(--ink)}
       </div>
     </div>
   </div>
-  <p class="muted" style="font-size:9.5pt">El nombre se compone en San Francisco Display en peso 800, con el complemento en peso 400. La altura del icono es igual a la altura total del bloque de texto en la versión horizontal.</p>
+  <p class="muted" style="font-size:9.5pt">El nombre se compone en Plus Jakarta Sans en peso 800, con el complemento en peso 400. La altura del icono es igual a la altura total del bloque de texto en la versión horizontal.</p>
   <div class="card" style="margin-top:auto">
     <h3>Coedición institucional</h3>
     <div style="display:flex;align-items:center;gap:9mm;margin:3mm 0">
@@ -492,18 +506,19 @@ ul li b{color:var(--ink)}
 
 <!-- 8 TIPOGRAFIA -->
 <div class="page white">
-  <div class="head"><span class="eyebrow">06 · Tipografía</span><h2>San Francisco <span>y Plus Jakarta Sans</span></h2></div>
-  <div class="g2">
-    <div class="card" style="background:var(--canvas);box-shadow:none">
-      <span class="eyebrow">iOS y iPadOS</span>
-      <div style="display:flex;align-items:flex-end;gap:6mm"><div class="aa" style="font-family:var(--sf)">Aa</div><div><h3>SF Pro</h3><p>Fuente del sistema de Apple. Se usa sin incluir archivos en la aplicación.</p></div></div>
-      <div class="chars" style="font-family:var(--sf)">ABCDEFGHIJKLMNÑOPQRSTUVWXYZ abcdefghijklmnñopqrstuvwxyz áéíóú 0123456789</div>
+  <div class="head"><span class="eyebrow">06 · Tipografía</span><h2>Plus Jakarta Sans <span>en todas las plataformas</span></h2></div>
+  <div class="card" style="background:var(--canvas)">
+    <div style="display:flex;align-items:flex-end;gap:10mm">
+      <div class="aa" style="font-family:var(--jk)">Aa</div>
+      <div style="display:flex;flex-direction:column;gap:2mm;flex:1">
+        <h3>Una sola familia en iOS, iPadOS y Android</h3>
+        <p>Licencia SIL Open Font. Los archivos van dentro de la aplicación, así que el texto se ve igual en cualquier equipo y sin conexión.</p>
+        <div style="display:flex;gap:6mm;margin-top:2mm;font-size:13pt">
+          <span style="font-weight:400">Regular</span><span style="font-weight:500">Medium</span><span style="font-weight:600">SemiBold</span><span style="font-weight:700">Bold</span><span style="font-weight:800">ExtraBold</span>
+        </div>
+      </div>
     </div>
-    <div class="card" style="background:var(--canvas);box-shadow:none">
-      <span class="eyebrow">Android</span>
-      <div style="display:flex;align-items:flex-end;gap:6mm"><div class="aa" style="font-family:var(--jk)">Aa</div><div><h3>Plus Jakarta Sans</h3><p>Licencia SIL Open Font. Se incluye en la aplicación porque la licencia de SF Pro solo permite su uso en plataformas de Apple.</p></div></div>
-      <div class="chars" style="font-family:var(--jk)">ABCDEFGHIJKLMNÑOPQRSTUVWXYZ abcdefghijklmnñopqrstuvwxyz áéíóú 0123456789</div>
-    </div>
+    <div class="chars" style="font-family:var(--jk)">ABCDEFGHIJKLMNÑOPQRSTUVWXYZ abcdefghijklmnñopqrstuvwxyz áéíóú 0123456789</div>
   </div>
   <div class="scale">
     <div><code>display · 34 / 800 / −1.2</code><span style="font:800 26pt/1 var(--sf);letter-spacing:-.035em">Pirámide</span><code>Títulos de pantalla</code></div>
@@ -756,9 +771,8 @@ ul li b{color:var(--ink)}
   <span class="k">static const</span> tablet = 600.0, tabletWide = 1024.0;
 }</pre>
 <pre class="grow"><span class="c">// lib/theme/hp_type.dart</span>
-<span class="c">// iOS: fuente del sistema (SF Pro). Android: Plus Jakarta Sans.</span>
-String? hpFamily(TargetPlatform p) =&gt;
-    p == TargetPlatform.iOS ? <span class="k">null</span> : <span class="s">'PlusJakartaSans'</span>;
+<span class="c">// Plus Jakarta Sans en iOS, iPadOS y Android.</span>
+<span class="k">const</span> String hpFontFamily = <span class="s">'PlusJakartaSans'</span>;
 
 <span class="k">abstract final class</span> HpText {
   <span class="k">static const</span> display    = TextStyle(fontSize: 34,
