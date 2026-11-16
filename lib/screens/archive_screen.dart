@@ -168,12 +168,12 @@ class _Credits extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 20),
-          Text('Diseño y desarrollo', style: HpText.caption),
-          const Text(
-            'Eduardo Ignacio Castellón Castillo',
-            style: TextStyle(fontWeight: FontWeight.w600),
-          ),
+          // const SizedBox(height: 20),
+          // Text('Diseño y desarrollo', style: HpText.caption),
+          // const Text(
+          //   'Eduardo Ignacio Castellón Castillo',
+          //   style: TextStyle(fontWeight: FontWeight.w600),
+          // ),
           const SizedBox(height: 10),
           Text(
             'Proyecto en conjunto con el Instituto Nacional de Antropología e Historia. '
